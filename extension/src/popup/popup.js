@@ -1,4 +1,7 @@
-const FIREBASE_HOSTING_URL = 'https://crm-extension.web.app?' + Date.now();
+// Base URL used for the Firebase hosted login page
+const FIREBASE_HOSTING_ORIGIN = 'https://crm-extension.web.app';
+// Add a timestamp to bust any potential caching when loading the iframe
+const FIREBASE_HOSTING_URL = `${FIREBASE_HOSTING_ORIGIN}?${Date.now()}`;
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -48,7 +51,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
     window.addEventListener('message', (event) => {
-        if (event.origin !== FIREBASE_HOSTING_URL) return;
+        // Only accept messages from the expected Firebase hosting origin
+        if (event.origin !== FIREBASE_HOSTING_ORIGIN) return;
         console.log('Message from iframe', event.data);
         try {
             const data = JSON.parse(event.data);
