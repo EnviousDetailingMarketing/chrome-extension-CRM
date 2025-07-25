@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "crm-extension",
     "public": "public",
     "ignore": [
       "firebase.json",

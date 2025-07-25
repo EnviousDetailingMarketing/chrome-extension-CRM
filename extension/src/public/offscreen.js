@@ -1,4 +1,4 @@
-const FIREBASE_HOSTING_URL = 'https://extension--auth-firebase.web.app';
+const FIREBASE_HOSTING_URL = 'https://crm-extension.web.app';
 
 const iframe = document.createElement('iframe');
 iframe.src = FIREBASE_HOSTING_URL;
