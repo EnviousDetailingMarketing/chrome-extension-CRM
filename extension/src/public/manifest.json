@@ -28,7 +28,7 @@
     }
   ],
   "oauth2": {
-    "client_id": "your_client_id",
+    "client_id": "986385040435-dftjudqo0eqgcjtcpsmnn16448tvsvci.apps.googleusercontent.com",
     "scopes": ["openid", "email", "profile"]
   }
 }
