@@ -1,5 +1,5 @@
 const OFFSCREEN_DOCUMENT_PATH = 'offscreen.html';
-const FIREBASE_HOSTING_URL = 'https://extension--auth-firebase.web.app'; 
+const FIREBASE_HOSTING_URL = 'https://crm-extension.web.app'; 
 
 let creatingOffscreenDocument;
 
@@ -24,10 +24,10 @@ async function setupOffscreenDocument() {
     }
 }
 
-async function getAuthFromOffscreen() {
+async function getAuthFromOffscreen(email, password) {
     await setupOffscreenDocument();
     return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({action: 'getAuth', target: 'offscreen'}, (response) => {
+        chrome.runtime.sendMessage({action: 'getAuth', target: 'offscreen', email, password}, (response) => {
             if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
             } else {
@@ -39,7 +39,8 @@ async function getAuthFromOffscreen() {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'signIn') {
-        getAuthFromOffscreen()
+                getAuthFromOffscreen(message.email, message.password)
+
             .then(user => {
                 chrome.storage.local.set({user: user}, () => {
                     sendResponse({user: user});
