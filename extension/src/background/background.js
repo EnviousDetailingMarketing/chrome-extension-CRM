@@ -1,5 +1,6 @@
 const OFFSCREEN_DOCUMENT_PATH = 'offscreen.html';
-const FIREBASE_HOSTING_URL = 'https://crm-extension.web.app'; 
+const FIREBASE_HOSTING_URL = 'https://crm-extension.web.app';
+console.log('Background script loaded');
 
 let creatingOffscreenDocument;
 
@@ -9,7 +10,10 @@ async function hasOffscreenDocument() {
 }
 
 async function setupOffscreenDocument() {
-    if (await hasOffscreenDocument()) return;
+    if (await hasOffscreenDocument()) {
+        console.log('Offscreen document already exists');
+        return;
+    }
 
     if (creatingOffscreenDocument) {
         await creatingOffscreenDocument;
@@ -25,9 +29,11 @@ async function setupOffscreenDocument() {
 }
 
 async function getAuthFromOffscreen(email, password) {
+    console.log('Requesting auth from offscreen');
+
     await setupOffscreenDocument();
     return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({action: 'getAuth', target: 'offscreen', email, password}, (response) => {
+        chrome.runtime.sendMessage({ action: 'getAuth', target: 'offscreen', email, password }, (response) => {
             if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
             } else {
@@ -38,20 +44,24 @@ async function getAuthFromOffscreen(email, password) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log('Received message', message);
+
     if (message.action === 'signIn') {
-                getAuthFromOffscreen(message.email, message.password)
+        getAuthFromOffscreen(message.email, message.password)
 
             .then(user => {
-                chrome.storage.local.set({user: user}, () => {
-                    sendResponse({user: user});
+                chrome.storage.local.set({ user: user }, () => {
+                    sendResponse({ user: user });
                 });
             })
             .catch(error => {
                 console.error('Authentication error:', error);
-                sendResponse({error: error.message});
+                sendResponse({ error: error.message });
             });
         return true; // Indicates we will send a response asynchronously
     } else if (message.action === 'signOut') {
+        console.log('Signing out');
+
         chrome.storage.local.remove('user', () => {
             sendResponse();
         });

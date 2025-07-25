@@ -3,10 +3,14 @@ const FIREBASE_HOSTING_URL = 'https://crm-extension.web.app';
 const iframe = document.createElement('iframe');
 iframe.src = FIREBASE_HOSTING_URL;
 document.body.appendChild(iframe);
+console.log('Offscreen document initialized');
+
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'getAuth' && message.target === 'offscreen') {
-        function handleIframeMessage({data}) {
+        console.log('Received getAuth message', message);
+
+        function handleIframeMessage({ data }) {
             try {
                 const parsedData = JSON.parse(data);
                 window.removeEventListener('message', handleIframeMessage);

@@ -1,7 +1,13 @@
+const FIREBASE_HOSTING_URL = 'https://crm-extension.web.app';
+
+
 document.addEventListener('DOMContentLoaded', function () {
+    console.log("DOMContentLoaded: popup.js");
     const signInButton = document.getElementById('signInButton');
     const signOutButton = document.getElementById('signOutButton');
     const userInfo = document.getElementById('userInfo');
+    const container = document.querySelector('.popup-container');
+    let loginFrame = null;
     let user = null;
 
     // Update UI based on user authentication state
@@ -17,29 +23,48 @@ document.addEventListener('DOMContentLoaded', function () {
             signOutButton.style.display = 'none';
             user = null;
         }
-        console.log(currentUser);
+        console.log('UI updated with user:', currentUser);
+
     }
 
     // Fetch the user state from Chrome storage
     chrome.storage.local.get(['user'], function (result) {
+                console.log('Stored user from chrome.storage:', result.user);
+
         updateUI(result.user);
     });
 
     // Sign-in button click handler
     signInButton.addEventListener('click', function () {
-        const email = prompt('Enter your email');
-        const password = prompt('Enter your password');
-        if (!email || !password) {
-            return;
+        console.log('Login button clicked');
+        if (!loginFrame) {
+            loginFrame = document.createElement('iframe');
+            loginFrame.src = FIREBASE_HOSTING_URL;
+            loginFrame.style.width = '100%';
+            loginFrame.style.height = '300px';
+            loginFrame.style.border = 'none';
+            container.appendChild(loginFrame);
         }
-        chrome.runtime.sendMessage({ action: 'signIn', email, password }, function (response) {
-            if (response.user) {
-                chrome.storage.local.set({ user: response.user });
-                updateUI(response.user);
-            } else if (response.error) {
-                console.error('Authentication failed:', response.error);
-            }
         });
+
+    window.addEventListener('message', (event) => {
+        if (event.origin !== FIREBASE_HOSTING_URL) return;
+        console.log('Message from iframe', event.data);
+        try {
+            const data = JSON.parse(event.data);
+            if (data.user) {
+                chrome.storage.local.set({ user: data.user });
+                updateUI(data.user);
+                if (loginFrame) {
+                    container.removeChild(loginFrame);
+                    loginFrame = null;
+                }
+            } else if (data.error) {
+                console.error('Authentication failed:', data.error);
+            }
+ } catch (e) {
+            console.error('Failed to parse message', e);
+        }
     });
 
     // Sign-out button click handler
@@ -54,4 +79,4 @@ document.addEventListener('DOMContentLoaded', function () {
         updateUI(null);
     }
 
-}); // change
+}); 
