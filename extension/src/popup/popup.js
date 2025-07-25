@@ -1,4 +1,4 @@
-const FIREBASE_HOSTING_URL = 'https://crm-extension.web.app';
+const FIREBASE_HOSTING_URL = 'https://crm-extension.web.app?' + Date.now();
 
 
 document.addEventListener('DOMContentLoaded', function () {
