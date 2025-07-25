@@ -17,7 +17,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
 
         window.addEventListener('message', handleIframeMessage);
-        iframe.contentWindow.postMessage({initAuth: true}, FIREBASE_HOSTING_URL);
-        return true; // Indicates we will send a response asynchronously
+        iframe.contentWindow.postMessage({
+            initAuth: true,
+            email: message.email,
+            password: message.password
+        }, FIREBASE_HOSTING_URL);
+        return true; // Indicates we will send a response asynchronously //change
     }
 });
