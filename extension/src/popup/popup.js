@@ -27,10 +27,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Sign-in button click handler
     signInButton.addEventListener('click', function () {
-        chrome.runtime.sendMessage({ action: 'signIn' }, function (response) {
+        const email = prompt('Enter your email');
+        const password = prompt('Enter your password');
+        if (!email || !password) {
+            return;
+        }
+        chrome.runtime.sendMessage({ action: 'signIn', email, password }, function (response) {
             if (response.user) {
                 chrome.storage.local.set({ user: response.user });
                 updateUI(response.user);
+            } else if (response.error) {
+                console.error('Authentication failed:', response.error);
             }
         });
     });
@@ -47,4 +54,4 @@ document.addEventListener('DOMContentLoaded', function () {
         updateUI(null);
     }
 
-});
+}); // change
